@@ -1,25 +1,22 @@
-import logo from './logo.svg';
+import { Routes, Route } from "react-router-dom";
+import { BrowserRouter } from 'react-router-dom';
+import CardDetail from "./components/CardDetail/CardDetail";
+import Home from "./components/Home";
 import './App.css';
+import MyPokemonList from "./components/MyPokemonList";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/pokemon/:id" element={<CardDetail />} />
+          <Route path="/mypokemon-list" element={<MyPokemonList />} />
+          <Route path="/" element={<Home />} />
+        </Routes>  
+      </BrowserRouter>
   );
+   
 }
 
 export default App;
+ 
