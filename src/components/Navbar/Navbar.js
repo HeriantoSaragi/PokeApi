@@ -9,7 +9,8 @@ function Navbar() {
                 Pokemon API
             </div>
             <div>
-                <Link to="/mypokemon-list">My Pokemon</Link>
+                <Link to="/mypokemons">My Pokemon</Link>
+                <Link to="/">Pokemons</Link>
             </div>
         </div>
     );

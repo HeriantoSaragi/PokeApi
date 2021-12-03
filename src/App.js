@@ -8,11 +8,7 @@ import MyPokemonList from "./components/MyPokemonList";
 function App() {
   return (
       <BrowserRouter>
-        <Routes>
-          <Route path="/pokemon/:id" element={<CardDetail />} />
-          <Route path="/mypokemon-list" element={<MyPokemonList />} />
-          <Route path="/" element={<Home />} />
-        </Routes>  
+        <Home />
       </BrowserRouter>
   );
    

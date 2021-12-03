@@ -1,73 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import Card from '../Card';
 import Navbar from '../Navbar';
-import { getAllPokemon, getDetailPokemon} from '../../services/pokemon';
+import { Route, Routes } from 'react-router';
+import axios from 'axios';
+import Main from './Main';
+import { useNavigate } from 'react-router-dom';
+import CardDetail from '../CardDetail/CardDetail';
 
 
 function Home() {
-    const [pokemonData, setPokemonData] = useState([])
-    const [nextUrl, setNextUrl] = useState('');
-    const [prevUrl, setPrevUrl] = useState('');
-    const [loading, setLoading] = useState(true);
-    const initialURL = 'https://pokeapi.co/api/v2/pokemon'
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        async function fetchData() {
-        let response = await getAllPokemon(initialURL)
-        setNextUrl(response.next);
-        setPrevUrl(response.previous);
-        await loadPokemon(response.results);
-        setLoading(false);
-        }
-        fetchData();
-    }, [])
-
-    const next = async () => {
-        setLoading(true);
-        let data = await getAllPokemon(nextUrl);
-        await loadPokemon(data.results);
-        setNextUrl(data.next);
-        setPrevUrl(data.previous);
-        setLoading(false);
+    const catchPokemons = (id) => {
+      axios.get(`http://localhost:3200/pokemons/${id}/catch`).then(res => res.data.isCatched ?  alert(`Pokemon ${res.data.name} is catched`) : alert(`Pokemon ${res.data.name} is not catched`));
     }
 
-    const prev = async () => {
-        if (!prevUrl) return;
-        setLoading(true);
-        let data = await getAllPokemon(prevUrl);
-        await loadPokemon(data.results);
-        setNextUrl(data.next);
-        setPrevUrl(data.previous);
-        setLoading(false);
+    const deleteMyPokemons = (id) => {
+      axios.delete(`http://localhost:3200/mypokemons/${id}`).then(res => 
+        res.data.isDeleted ? successDeleted(res.data) : alert(`Pokemon ${res.data.name} is not deleted`)
+        );
     }
-    const loadPokemon = async (data) => {
-        let _pokemonData = await Promise.all(data.map(async pokemon => {
-        let pokemonRecord = await getDetailPokemon(pokemon)
-        return pokemonRecord
-        }))
-        setPokemonData(_pokemonData);
+
+    const successDeleted = (pokemon) => { 
+      alert(`Pokemon ${pokemon.name} is deleted`)
+      navigate("/mypokemons") 
     }
-    
+
+    const renameMyPokemons =  async (id) => {
+      const result = await axios.put(`http://localhost:3200/mypokemons/${id}`);
+      alert(`Pokemon ${result.data.name} is renamed`);
+      return result.data.name;
+    }
+
     return (
         <div>
-          {loading ? <h1 style={{ textAlign: 'center' }}>Loading...</h1> : (
-            <>
               <Navbar />
-              <div className="btn">
-                <button onClick={prev}>Prev</button>
-                <button onClick={next}>Next</button>
-              </div>
-              <div className="grid-container">
-                {pokemonData.map((pokemon, i) => {
-                  return <Card key={i} pokemon={pokemon} id={i+1} />
-                })}
-              </div>
-              <div className="btn">
-                <button onClick={prev}>Prev</button>
-                <button onClick={next}>Next</button>
-              </div>
-            </>
-          )}
+              <Routes>
+                <Route path="/pokemon/:id" element={<CardDetail methods={{deleteMyPokemons: deleteMyPokemons, catchPokemons: catchPokemons, renameMyPokemons: renameMyPokemons}}/>} />
+                <Route path="/" element={<Main isPokemons={true}/>} />
+                <Route path={"/mypokemons"} element={<Main isPokemons={false}/>}/>
+              </Routes>  
         </div>
     )
 }
